@@ -77,7 +77,6 @@ figure
 plot(signal4)
 title('One trial time-coure for source 4') 
 
-
 Sources = [raw1, raw2, raw3, raw4];
 %% Superimposing the simulated times course and adding the white noise
 SuperImposed = raw1;
@@ -111,10 +110,10 @@ ft_databrowser(cfg,Data);
 
 %% Up to this point was all providing simulations. In reality you need to provide the sensor data, the head model, and electrode positions yourself and use the codes below for localization of the sources
 %% You may use the forward model shown here, but it is important to have the electrode postions (elec.elecpos) from your own set ups.
-%% You need to make sure your real data has the same format at 'SuperImposed' otherwise it may not work.
+%% You need to make sure your real data has the same format as 'SuperImposed' otherwise it may not work.
 %% Calling the source-space ICA
 % When calling the source-space ICA, you need to know that it requires substantial amount of RAM from your computer.
-% To reduce the required RAM, you can, reduce the resolution for the
+% To reduce the required RAM, you can reduce the resolution for the
 % scanning grid, or reduce the length of the data duration by cfg.NoTrials
 % and also reducing the sample rate of the date using the cfg.ReSampleFs
 cfg = [] ; 

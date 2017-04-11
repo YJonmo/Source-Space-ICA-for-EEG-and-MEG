@@ -8,7 +8,7 @@
 load(['/standard_bem.mat']); %template boundary element model
 load(['/standard_mri.mat']); %template mri
 
-elec = [] ;
+elec = [] ; 
 elec.elecpos = [-29     0    30   -55   -34    36    56   -70   -64   -50   -27     0    30    52    68    73   -84   -81   -77   -60   -34     0    35    62    80    82    84   -84   -80   -65   -36     0    38  67    83    85   -86   -85   -80   -64   -36     0    38    67    83    86    86   -72   -67   -53   -29     0    32    56    68    73   -55   -37     0    37    56   -29     0    30
      84    88    85    69    77    78    70    42    48    53    57    59    58    54    50    44    15    14    19    23    26    27    26    24    20    15    14   -16   -14   -12   -10    -9   -10   -11   -13   -15   -47   -46   -47   -47   -47   -47   -47   -47   -46   -46   -47   -73   -76   -79   -81   -81   -80   -79   -76   -73   -98  -101  -102  -101   -98  -112  -115  -112
      -7    -2    -7   -11    21    22   -11   -11    17    42    60    66    60    41    16   -12   -50   -11    24    56    80    89    79    56    24   -11   -51    -9    29    64    90   100    88 64    29    -9   -46    -7    31    66    91    99    91    66    31    -7   -46    -2    28    56    75    83    77    57    28    -3     3    37    51    36     3     9    15     9]' ;
@@ -44,6 +44,8 @@ cfg.dip.signal = {signal1, signal1};  % two trials
 raw1 = ft_dipolesimulation(cfg);
 figure
 plot(signal1)
+title('One trial time-coure for source 1') 
+
 
 cfg.dip.pos = [-31 -70.5 -10];
 cfg.dip.mom = [0.5 0.2 0.5]';       
@@ -53,6 +55,7 @@ cfg.dip.signal = {signal2, signal2, signal2, signal2};  % three trials
 raw2 = ft_dipolesimulation(cfg);
 figure
 plot(signal2)
+title('One trial time-coure for source 2') 
 
 cfg.dip.pos = [-29 40 11.1];
 cfg.dip.mom = [0 0 1]';       % note, it should be transposed
@@ -62,6 +65,7 @@ cfg.dip.signal = {signal3, signal3, signal3, signal3, signal3};  % three trials
 raw3 = ft_dipolesimulation(cfg);
 figure
 plot(signal3)
+title('One trial time-coure for source 3') 
 
 cfg.dip.pos = [ 9 -40 22];
 cfg.dip.mom = [0.5 1 0.3]';       % note, it should be transposed
@@ -71,7 +75,7 @@ cfg.dip.signal = {signal4, signal4, signal4, signal4, signal4, signal4};  % thre
 raw4 = ft_dipolesimulation(cfg);
 figure
 plot(signal4)
-
+title('One trial time-coure for source 4') 
 
 
 Sources = [raw1, raw2, raw3, raw4];
@@ -100,7 +104,7 @@ cfg.viewmode = 'vertical';
 cfg.colorgroups = ones([1 length(Data.label)]);
 cfg.channelcolormap = [0 0 0];  %Above two lines plot in blue (events will be black)
 cfg.ploteventlabels = 'colorvalue';
-cfg.ylim = [0 .1]; %sets yscale
+cfg.ylim = [-0.1 .1]; %sets yscale
 cfg.blocksize = 5;
 cfg.continuous              = 'yes';
 ft_databrowser(cfg,Data);
@@ -132,11 +136,10 @@ cfg.viewmode = 'vertical';
 cfg.colorgroups = ones([1 length(SourceSpaceStuff.TemporalICs.label)]);
 cfg.channelcolormap = [0 0 0];  %Above two lines plot in blue (events will be black)
 cfg.ploteventlabels = 'colorvalue';
-cfg.ylim = [-1 1]; %sets yscale
+cfg.ylim = [-0.2 .2]; %sets yscale
 cfg.blocksize = 10 ;
 cfg.continuous              = 'yes';
 ft_databrowser(cfg,SourceSpaceStuff.TemporalICs);
-
 
 %% Function for 3D plotting of the components. Here you need to provide which component you are interested to look at by providing number for 'Curren_comp' 
 positions = grid.pos(grid.inside,:);

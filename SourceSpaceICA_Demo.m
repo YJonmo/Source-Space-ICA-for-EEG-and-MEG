@@ -3,10 +3,10 @@
 % The reference article is Jonmohamadi et al. (2014, NeuroImage)
 
 %% Using the prebuild BEM on T1 provided by the fieldtrip
-FieldTripPath = uigetdir;
-addpath(genpath(FieldTripPath))   % When GUI poped up, highlight the fieldtrip folder and press open
-load([FieldTripPath '/template/headmodel/standard_bem.mat']); %template boundary element model
-load([FieldTripPath  '/template/headmodel/standard_mri.mat']); %template mri
+% FieldTripPath = uigetdir;
+% addpath(genpath(FieldTripPath))   % When GUI poped up, highlight the fieldtrip folder and press open
+load(['/standard_bem.mat']); %template boundary element model
+load(['/standard_mri.mat']); %template mri
 
 elec = [] ;
 elec.elecpos = [-29     0    30   -55   -34    36    56   -70   -64   -50   -27     0    30    52    68    73   -84   -81   -77   -60   -34     0    35    62    80    82    84   -84   -80   -65   -36     0    38  67    83    85   -86   -85   -80   -64   -36     0    38    67    83    86    86   -72   -67   -53   -29     0    32    56    68    73   -55   -37     0    37    56   -29     0    30

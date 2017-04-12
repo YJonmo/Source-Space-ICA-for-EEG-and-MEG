@@ -31,6 +31,7 @@ grid = ft_prepare_leadfield(cfg);
 %% create a few dipoles with custom timecourses and locations
 % source: http://www.fieldtriptoolbox.org/example/compute_forward_simulated_data_and_apply_a_dipole_fit?s[]=eeg&s[]=dipole&s[]=simulation
 Fsample = 100 ;
+SourceMagnitude = 1000;
 
 cfg      = [];
 cfg.vol  = vol;               % see the calculated volume conduction
@@ -39,7 +40,7 @@ cfg.dip.pos = [0 0.5 0.3];
 cfg.dip.mom = [1 0 0]';       % note, it should be transposed
 cfg.fsample = Fsample;            % Hz
 time = (0:Fsample-1)/Fsample;           % manually create a time axis
-signal1 = sin(8*time*2*pi)*1000;   % manually create a signal
+signal1 = sin(8*time*2*pi)*SourceMagnitude;   % manually create a signal
 cfg.dip.signal = {signal1, signal1};  % two trials
 raw1 = ft_dipolesimulation(cfg);
 figure
@@ -50,7 +51,7 @@ title('One trial time-coure for source 1')
 cfg.dip.pos = [-31 -70.5 -10];
 cfg.dip.mom = [0.5 0.2 0.5]';       
 cfg.fsample = Fsample;            % Hz
-signal2 = (sin(4*time*2*pi)*1000);   % manually create a signal
+signal2 = (sin(4*time*2*pi)*SourceMagnitude);   % manually create a signal
 cfg.dip.signal = {signal2, signal2, signal2, signal2};  % three trials
 raw2 = ft_dipolesimulation(cfg);
 figure
@@ -60,7 +61,7 @@ title('One trial time-coure for source 2')
 cfg.dip.pos = [-29 40 11.1];
 cfg.dip.mom = [0 0 1]';       % note, it should be transposed
 cfg.fsample = Fsample;            % Hz
-signal3 = (sin(16*time*2*pi)*1000)./((time+1).^(10));   % manually create a signal
+signal3 = (sin(16*time*2*pi)*SourceMagnitude)./((time+1).^(10));   % manually create a signal
 cfg.dip.signal = {signal3, signal3, signal3, signal3, signal3};  % three trials
 raw3 = ft_dipolesimulation(cfg);
 figure
@@ -70,7 +71,7 @@ title('One trial time-coure for source 3')
 cfg.dip.pos = [ 9 -40 22];
 cfg.dip.mom = [0.5 1 0.3]';       % note, it should be transposed
 cfg.fsample = Fsample;            % Hz
-signal4 = (sin(2*time*2*pi)*1000)./((time+1).^(6));   % manually create a signal
+signal4 = (sin(2*time*2*pi)*SourceMagnitude)./((time+1).^(6));   % manually create a signal
 cfg.dip.signal = {signal4, signal4, signal4, signal4, signal4, signal4};  % three trials
 raw4 = ft_dipolesimulation(cfg);
 figure
@@ -81,7 +82,7 @@ Sources = [raw1, raw2, raw3, raw4];
 %% Superimposing the simulated times course and adding the white noise
 SuperImposed = raw1;
 No_Trials = 16
-BackGroundNoise = randn(size(Sources(1).trial{1},1),size(Sources(1).trial{1},2)*No_Trials)./(mean(mean(abs(Sources(1).trial{1}(:,1:11))))*4000);
+BackGroundNoise = randn(size(Sources(1).trial{1},1),size(Sources(1).trial{1},2)*No_Trials)./(SourceMagnitude/16);
 
 SourceDelays = [0, 2, 6, 1]; % These are the delays that each source has, i.e., source 3 strats at the 6th trial
 

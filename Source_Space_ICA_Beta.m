@@ -163,7 +163,7 @@ for I = 1:rank_source
 end
 
 %% Producing the 3D maps from the Spacial ICs and PCs
-No_Vox = size(SpacialICs,1)/3
+% No_Vox = size(SpacialICs,1)/3
 SpacialICs_Maps = zeros(No_Vox, rank_source);
 SpacialPCs_Maps = zeros(No_Vox, rank_source);
 for Curren_comp = 1:rank_source

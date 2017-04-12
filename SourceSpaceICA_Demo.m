@@ -168,7 +168,7 @@ hold on
 quiver3(positions(:,1),positions(:,2),positions(:,3),[SourceSpaceStuff.SpacialICs(1:3:No_Vox*3,Curren_comp)] , [SourceSpaceStuff.SpacialICs(2:3:No_Vox*3,Curren_comp)] , [SourceSpaceStuff.SpacialICs(3:3:No_Vox*3,Curren_comp)],2.0)
 
 %% Map on the MRI image this is anotehr way to observe the source maps
-Curren_comp = 1 ; 
+% Curren_comp = 1 ; 
 
 Inside_count = 0;
 source = grid;

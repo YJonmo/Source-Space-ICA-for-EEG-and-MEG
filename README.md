@@ -13,7 +13,7 @@ How to use:
 2) Download the contents of this repository and put them in a folder
 3) Run the code SourceSpaceICA_Demo.m 
 
-The code 'SourceSpaceICA_Demo.m' simulates 4 EEG sources and add white noise to them. Then applies source-space ICA to find the sources and at the end it plots their brain space maps with two different approaches. 
+The code 'SourceSpaceICA_Demo.m' simulates 4 EEG sources and add white noise to them. Then applies source-space ICA to find the sources and at the end it plots their brain space maps with two different approaches. You need to provide which component to be plotted. By default it plots component 1 (Current_comp = 1). 
 
 A few hints:
 To use this code for your study you need to provide the EEG, the head model, and electrode positions yourself and use the codes. 

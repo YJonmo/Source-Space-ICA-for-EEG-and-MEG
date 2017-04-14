@@ -1,7 +1,9 @@
 # Source-Space-ICA-for-EEG
 This Matlab code is the implementation of the Source-space ICA (Jonmohamadi et al. (2014 and 2016)) for EEG and MEG soure reconstruction. 
 The articles are available at:
+
 http://nzbri.org/resources/publications/130/Jonmohamadi_NeuroImage_2014.pdf
+
 https://pdfs.semanticscholar.org/f306/06490cfa7e3404ef5288ca24652bcdca7dfd.pdf
 
 Dependencies:

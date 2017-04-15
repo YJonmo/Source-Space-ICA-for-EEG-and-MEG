@@ -142,7 +142,7 @@ ft_databrowser(cfg,SourceSpaceStuff.TemporalICs);
 
 %% Function for 3D plotting of the components. Here you need to provide which component you are interested to look at by providing number for 'Curren_comp' 
 positions = grid.pos(grid.inside,:);
-Curren_comp =  2 ;  
+Curren_comp =  1 ;  
 Map = SourceSpaceStuff.SpacialICs_Maps(:,Curren_comp) ; 
 FigHandle = figure('Position', [1000, 500, 550, 170]);
 plot(Map/max(Map))

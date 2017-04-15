@@ -18,7 +18,7 @@ Dependencies:
 fieldtrip toolbox: ftp://ftp.fieldtriptoolbox.org/pub/fieldtrip/
 *The codes are tested on fieltrip version 20170410. So this version or newer ones are recommended. 
 
-How to use (easy):
+How to use (easy!):
 
 1) Download the fieldtrip toolbox and add its path to your MATLAB (folders and subfolders) 
 2) Download the contents of this repository and put them in a folder

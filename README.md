@@ -1,5 +1,6 @@
 # Source-Space-ICA-for-EEG
 Introduction:
+
 Source-space ICA is based on the application of singular value decomposition and ICA on the neuroelectrical signals from all brain voxels obtained post minimum-variancebeamforming of sensor-space EEG or MEG. Compared with the beamforming and power mapping approach, source-space ICA is far more robust to artifacts as it separates the activity of different brain sources and artifacts and provides a unique tomographic map for each. That is, the artifacts have their own maps and cannot interfere with the maps of other sources. Source-space ICA is also superior to sensor-space ICA on accuracy of localization of sources, as source-space ICA applies ICA to the time-courses of voxels reconstructed from minimum-variance beamforming on a 3D scanning grid and these time-
 courses are optimally unmixed via the beamformer. Each component identified by source-space ICA has its own tomographic map which shows the extent to which each voxel has contributed to that component.
 

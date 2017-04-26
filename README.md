@@ -31,7 +31,7 @@ The code 'SourceSpaceICA_Demo_EEG.m' and 'SourceSpaceICA_Demo_MEG.m' simulates 4
 A few hints:
 
 To use this code for your study you need to provide the EEG (or MEG), the head model, and sensor information (elec for EEG or grad for MEG) yourself. 
-You may use the prebuilt forward model shown here, but it is less than ideal.
+You may use the prebuilt head model shown here, but it is less than ideal.
 You need to make sure your EEG or MEG data has the same structure as simulated data shown here otherwise it may not work, i.e., the object 'Data' which is used in these codes should have 'Data.trial', 'Data.time', 'Data.fsample', 'Data.label'). In other words, you need to replace the 'Data' in these codes with you own 'Data'.
 When calling the source-space ICA, you need to know that it requires substantial amount of RAM from your computer.
 To reduce the required RAM, you can reduce the resolution of the scanning grid, or reduce the length of the data or reduce the sampling rate of the date, which can be done using cfg.grid.resolution before calling ft_prepare_leadfield function, cfg.NoTrials and cfg.ReSampleFs before calling Source_Space_ICA_Beta.

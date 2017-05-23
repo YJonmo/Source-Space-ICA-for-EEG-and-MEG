@@ -99,28 +99,28 @@ for Vox_Index = 1:No_Vox*3
     filters(Vox_Index,:) = filters(Vox_Index,:)/norm(filters(Vox_Index,:));
 end
     
-%% Converting to the continious data
+%% Converting to the continuous data
 %Source_space = data_shortened;
 
-data_continious = data_shortened;
-data_continious = rmfield(data_continious, 'trial');
-data_continious = rmfield(data_continious, 'time');
+data_continuous = data_shortened;
+data_continuous = rmfield(data_continuous, 'trial');
+data_continuous = rmfield(data_continuous, 'time');
 template_time = (0: (data_shortened.time{1}(2) - data_shortened.time{1}(1)) : 1/data_shortened.fsample*size(data_shortened.time{1},2)) ; 
-data_continious.trial{1}  = zeros(size(data_shortened.trial{1},1),  size(data_shortened.trial{1},2) * length(data_shortened.trial));
-data_continious.time{1}  = zeros(1,                             size(data_shortened.time{1},2)  * length(data_shortened.time));
+data_continuous.trial{1}  = zeros(size(data_shortened.trial{1},1),  size(data_shortened.trial{1},2) * length(data_shortened.trial));
+data_continuous.time{1}  = zeros(1,                             size(data_shortened.time{1},2)  * length(data_shortened.time));
 for Trial_Index = 1:length(data_shortened.trial)
-    data_continious.trial{1}(:,(Trial_Index-1)*size(data_shortened.trial{Trial_Index},2)+ 1: Trial_Index*size(data_shortened.trial{Trial_Index},2)) = data_shortened.trial{Trial_Index}(:,:); 
-    data_continious.time{1}(1,(Trial_Index-1)*size(data_shortened.time{Trial_Index},2)+ 1: Trial_Index*  size(data_shortened.time{Trial_Index},2)) = template_time(1:end-1) + (Trial_Index-1)*template_time(end) ;
+    data_continuous.trial{1}(:,(Trial_Index-1)*size(data_shortened.trial{Trial_Index},2)+ 1: Trial_Index*size(data_shortened.trial{Trial_Index},2)) = data_shortened.trial{Trial_Index}(:,:); 
+    data_continuous.time{1}(1,(Trial_Index-1)*size(data_shortened.time{Trial_Index},2)+ 1: Trial_Index*  size(data_shortened.time{Trial_Index},2)) = template_time(1:end-1) + (Trial_Index-1)*template_time(end) ;
 end
 
-%Source_space = trial2continious(data_shortened);
-Source_space = data_continious ; 
-Source_space.continious{1} = zeros(size(filters,1), size(data_shortened.trial{1},2)*length(data_shortened.trial));
+%Source_space = trial2continuous(data_shortened);
+Source_space = data_continuous ; 
+Source_space.continuous{1} = zeros(size(filters,1), size(data_shortened.trial{1},2)*length(data_shortened.trial));
 Source_space.trial = data_shortened.trial;
 
 for Trial_Index = 1:length(data_shortened.trial)
     ft_progress(Trial_Index/length(data_shortened.trial), 'Processing trial %d from %d', Trial_Index, length(data_shortened.trial));
-    Source_space.continious{1}(:, (Trial_Index-1)*size(data_shortened.time{Trial_Index},2) + 1: Trial_Index*size(data_shortened.time{Trial_Index},2)) = (filters * data_shortened.trial{Trial_Index}); 
+    Source_space.continuous{1}(:, (Trial_Index-1)*size(data_shortened.time{Trial_Index},2) + 1: Trial_Index*size(data_shortened.time{Trial_Index},2)) = (filters * data_shortened.trial{Trial_Index}); 
     Source_space.trial{Trial_Index} = filters * data_shortened.trial{Trial_Index};
 end
 ft_progress('close')
@@ -128,9 +128,9 @@ ft_progress('close')
                     
 %% Source-space ICA
 
-rank_source = rank(Source_space.continious{1})  
+rank_source = rank(Source_space.continuous{1})  
 
-[U Sig V] = svd(Source_space.continious{1}) ; 
+[U Sig V] = svd(Source_space.continuous{1}) ; 
 
 % It is recommended to reduce the rank when the data is short or when the
 % band passed data is used as MATLAB sometimes over estimates the number

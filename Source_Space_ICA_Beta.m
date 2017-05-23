@@ -1,7 +1,7 @@
 function [SourceSpace] = Source_Space_ICA_Beta(cfg, dataToRun)
 
 
-% Sample using suntax:
+% Sample using syntax:
 % cfg = [] ; 
 % cfg.NoTrials = 100 ;
 % cfg.vol = vol;
@@ -67,7 +67,7 @@ if  isfield(cfg, 'ReSampleFs')
     data_shortened = ft_resampledata(cfg2, data_shortened)
 end
 
-%% Vector LCMV Beamformer 
+%% Vector LCMV beamformer 
 cfg2 = [];
 cfg2.covariance = 'yes';
 cfg2.covariancewindow = 'all';

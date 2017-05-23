@@ -4,7 +4,7 @@
 
 %% Using the prebuild BEM on T1 provided by the fieldtrip
 % FieldTripPath = uigetdir;
-% addpath(genpath(FieldTripPath))   % When GUI poped up, highlight the fieldtrip folder and press open
+% addpath(genpath(FieldTripPath))   % When GUI popped up, highlight the fieldtrip folder and press open
 load(['/standard_bem.mat']); %template boundary element model
 load(['/standard_mri.mat']); %template mri
 
@@ -28,13 +28,13 @@ cfg.channel = elec.label; %Only generate leadfields for good channels else will 
 grid = ft_prepare_leadfield(cfg);
 
 
-%% create a few dipoles with custom timecourses and locations
+%% Create a few dipoles with custom timecourses and locations
 Fsample = 100 ;
 SourceMagnitude = 1000;
 
 cfg      = [];
 cfg.vol  = vol;               % see the calculated volume conduction
-cfg.elec = elec;              % elec file which contains thelabel and the position of the electrodes
+cfg.elec = elec;              % elec file which contains the label and the position of the electrodes
 cfg.dip.pos = [0 0.5 30];
 cfg.dip.mom = [1 0 0]';       % note, it should be transposed
 cfg.fsample = Fsample;            % Hz
@@ -78,12 +78,12 @@ plot(signal4)
 title('One trial time-coure for source 4') 
 
 Sources = [raw1, raw2, raw3, raw4];
-%% Superimposing the simulated times course and adding the white noise
+%% Superimposing the simulated time courses and adding the white noise
 SuperImposed = raw1;
 No_Trials = 22
 BackGroundNoise = randn(size(Sources(1).trial{1},1),size(Sources(1).trial{1},2)*No_Trials)./(SourceMagnitude/15);
 
-SourceDelays = [0, 2, 6, 1]; % These are the delays that each source has, i.e., source 3 strats at the 6th trial
+SourceDelays = [0, 2, 6, 1]; % These are the delays that each source has, i.e., source number 3 starts at the 6th trial
 
 for Trial_Index = 1:No_Trials
     SuperImposed.trial{Trial_Index} = BackGroundNoise(:, 1 + (Trial_Index - 1)*Fsample : Trial_Index*Fsample) ; 
@@ -109,7 +109,7 @@ cfg.continuous              = 'yes';
 ft_databrowser(cfg,Data);
 
 %% Up to this point was all providing simulations. In reality you need to provide the sensor data, the head model, and electrode positions yourself and use the codes below for localization of the sources
-%% You may use the forward model shown here, but it is important to have the electrode postions (elec.elecpos) from your own set ups.
+%% You may use the forward model shown here, but it is important to have the electrode positions (elec.elecpos) from your own set ups.
 %% You need to make sure your real data has the same format as 'SuperImposed' otherwise it may not work.
 %% Calling the source-space ICA
 % When calling the source-space ICA, you need to know that it requires substantial amount of RAM from your computer.
@@ -123,7 +123,7 @@ cfg.elec = elec;
 % cfg.ReSampleFs = 100;  
 cfg.grid = grid;
 cfg.ReduceRankBy = 20;                      % This reduces the number of principal components (here by 20). 
-                                            % You may not need this, but it is recommend for short data
+                                            % You may not need this, but it is recommend for small suration EEG
 SensorData = SuperImposed
 [SourceSpaceStuff] = Source_Space_ICA_Beta(cfg, SensorData);
               
@@ -140,10 +140,10 @@ cfg.blocksize = 10 ;
 cfg.continuous              = 'yes';
 ft_databrowser(cfg,SourceSpaceStuff.TemporalICs);
 
-%% Function for 3D plotting of the components. Here you need to provide which component you are interested to look at by providing number for 'Curren_comp' 
+%% Function for 3D plotting of the components. Here you need to provide which component you are interested to look at by providing number for 'Current_comp' 
 positions = grid.pos(grid.inside,:);
-Curren_comp =  1 ;  
-Map = SourceSpaceStuff.SpacialICs_Maps(:,Curren_comp) ; 
+Current_comp =  1 ;  
+Map = SourceSpaceStuff.SpacialICs_Maps(:,Current_comp) ; 
 FigHandle = figure('Position', [1000, 500, 550, 170]);
 plot(Map/max(Map))
 ylim([0 1.05])
@@ -164,17 +164,17 @@ colorbar;
 
 %% Arrow plot for showing the direction of the sources 
 hold on 
-quiver3(positions(:,1),positions(:,2),positions(:,3),[SourceSpaceStuff.SpacialICs(1:3:No_Vox*3,Curren_comp)] , [SourceSpaceStuff.SpacialICs(2:3:No_Vox*3,Curren_comp)] , [SourceSpaceStuff.SpacialICs(3:3:No_Vox*3,Curren_comp)],2.0)
+quiver3(positions(:,1),positions(:,2),positions(:,3),[SourceSpaceStuff.SpacialICs(1:3:No_Vox*3,Current_comp)] , [SourceSpaceStuff.SpacialICs(2:3:No_Vox*3,Current_comp)] , [SourceSpaceStuff.SpacialICs(3:3:No_Vox*3,Current_comp)],2.0)
 
 %% Map on the MRI image.  This is a more convensional way to observe the source maps
-% Curren_comp = 1 ; 
+% Current_comp = 1 ; 
 
 Inside_count = 0;
 source = grid;
 for Vox_Index = 1 : size(grid.inside,1)
     if  grid.inside(Vox_Index) == 1
         Inside_count = Inside_count + 1;
-        source.avg.Map(Vox_Index) = SourceSpaceStuff.SpacialICs_Maps(Inside_count,Curren_comp);
+        source.avg.Map(Vox_Index) = SourceSpaceStuff.SpacialICs_Maps(Inside_count,Current_comp);
     else
         source.avg.Map(Vox_Index) = 0;
     end

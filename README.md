@@ -16,7 +16,7 @@ Dependencies:
 
 fieldtrip toolbox: ftp://ftp.fieldtriptoolbox.org/pub/fieldtrip/
 
-*The codes are tested on fieltrip version 20170410. So this version or newer ones are recommended. 
+*The codes are tested on fieldtrip version 20170410. So this version or newer ones are recommended. 
 
 How to use (easy!):
 

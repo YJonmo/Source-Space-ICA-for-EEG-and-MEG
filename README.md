@@ -1,7 +1,7 @@
 # Source-Space ICA for EEG and MEG
 Source-space ICA in brief:
 
-Source-space ICA is an approach for brain source localization and time-course reconstruction via application of singular value decomposition and ICA (independent component analysis) post minimum-variance beamforming of sensor-space EEG or MEG. Compared with the beamforming and power mapping approach, source-space ICA is far more robust to artifacts as it separates the activity of different brain sources and artifacts and provides a unique tomographic map for each. That is, the artifacts have their own maps and cannot interfere with the maps of other sources. Source-space ICA is also superior to sensor-space ICA on accuracy and spacial resolution for localization of sources. Each component identified by source-space ICA has its own tomographic map which shows the extent to which each voxel has contributed to that component.
+Source-space ICA is an approach for brain source localization and time-course reconstruction via application of singular value decomposition and ICA (independent component analysis) post minimum-variance beamforming of sensor-space EEG or MEG. Compared with the beamforming and power mapping approach, source-space ICA is far more robust to artifacts as it separates the activity of different brain sources and artifacts and provides a unique tomographic map for each. That is, the artifacts have their own maps and cannot interfere with the maps of other sources. Source-space ICA is also superior to sensor-space ICA on accuracy and spatial resolution for localization of sources. Each component identified by source-space ICA has its own tomographic map which shows the extent to which each voxel has contributed to that component.
 The articles are available at:
 
 http://nzbri.org/resources/publications/130/Jonmohamadi_NeuroImage_2014.pdf
@@ -10,7 +10,7 @@ https://pdfs.semanticscholar.org/f306/06490cfa7e3404ef5288ca24652bcdca7dfd.pdf
 
 About this repository:
 
-This repository contains Matlab codes and sample sensor templates for implementation of the Source-space ICA (Jonmohamadi et al. (2014 and 2016)) for EEG and MEG soure reconstruction. 
+This repository contains Matlab codes and sample sensor templates for implementation of the Source-space ICA (Jonmohamadi et al. (2014 and 2016)) for EEG and MEG source reconstruction. 
 
 Dependencies:
 

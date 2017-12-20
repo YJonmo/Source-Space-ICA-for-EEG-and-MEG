@@ -9,7 +9,7 @@ function [SourceSpace] = Source_Space_ICA_Beta(cfg, dataToRun)
 % cfg.grad = grad;      % for MEG    
 % cfg.grid = grid;      
 % cfg.ReSampleFs = 100;
-% cfg.ReduceRankBy = 2;
+% cfg.NumComp = 20;
 % SensorData = data_simulation_Trialed
 % [SourceSpaceStuff] = Source_Space_ICA(cfg, SensorData);
 
@@ -25,7 +25,7 @@ function [SourceSpace] = Source_Space_ICA_Beta(cfg, dataToRun)
 % cfg.ReSampleFs (almost necessary to reduce the size of the required
 % memory) when the sampling rate is high (e.g., 500)
 % cfg.NoTrials which indicates how many trials of the given data shall be processed. If not give, all the trials will be processed
-% cfg.ReduceRankBy which shows how many of the components shall be removed
+% cfg.NumComp which shows how many of the components shall be considered
 % by SVD. If not given nothing will be removed. 
 
 % The outputs of this function are:
@@ -135,8 +135,8 @@ rank_source = rank(Source_space.continuous{1})
 % It is recommended to reduce the rank when the data is short or when the
 % band passed data is used as MATLAB sometimes over estimates the number
 % the rank of the data matrix
-if  isfield(cfg, 'ReduceRankBy')
-    rank_source = rank_source - cfg.ReduceRankBy ;
+if  isfield(cfg, 'NumComp')
+    rank_source = cfg.NumComp ;
 end
 
 SpacialPCs  = U(:,1:rank_source) ;      % Spatial subspace

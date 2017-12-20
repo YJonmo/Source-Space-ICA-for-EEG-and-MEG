@@ -122,7 +122,7 @@ cfg.vol = vol;
 cfg.elec = elec;
 % cfg.ReSampleFs = 100;  
 cfg.grid = grid;
-cfg.ReduceRankBy = 20;                      % This reduces the number of principal components (here by 20). 
+cfg.NumComp = 20;                      % This reduces the number of principal components (here to 20). 
                                             % You may not need this, but it is recommend for small suration EEG
 SensorData = SuperImposed
 [SourceSpaceStuff] = Source_Space_ICA_Beta(cfg, SensorData);

@@ -3,6 +3,9 @@
 % The reference article is Jonmohamadi and Jones (2016, J Neural Eng)
 %% Create a single shell volume conductor
 % load T1 MRI
+FieldTripPath = uigetdir;
+addpath(genpath(FieldTripPath))   % When GUI popped up, highlight the fieldtrip folder and press open
+rmpath(strcat(FieldTripPath,'/external/dmlt/external/murphy/KPMstats'))
 load(['/standard_mri.mat']); %template mri 
 cfg = [];
 cfg.write      = 'no';
@@ -125,7 +128,7 @@ cfg.vol = headmodel;
 cfg.grad = dataFIC.grad;
 % cfg.ReSampleFs = 100;  
 cfg.grid = grid;
-cfg.ReduceRankBy = 100;                      % This reduces the number of principal components (here by 20). 
+cfg.NumComp = 30;                     % This reduces the number of principal components (here by 20). 
                                             % You may not need this, but it is recommend for short duration data
 SensorData = SuperImposed
 [SourceSpaceStuff] = Source_Space_ICA_Beta(cfg, Data);
@@ -146,7 +149,7 @@ ft_databrowser(cfg,SourceSpaceStuff.TemporalICs);
 
 %% Function for 3D plotting of the components. Here you need to provide which component you are interested to look at by providing number for 'Current_comp' 
 
-Current_comp =  1 ;
+Current_comp =  30 ;
 
 positions = grid.pos(grid.inside,:);  
 Map = SourceSpaceStuff.SpatialICs_Maps(:,Current_comp) ; 

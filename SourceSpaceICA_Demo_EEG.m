@@ -143,7 +143,7 @@ ft_databrowser(cfg,SourceSpaceStuff.TemporalICs);
 %% Function for 3D plotting of the components. Here you need to provide which component you are interested to look at by providing number for 'Current_comp' 
 positions = grid.pos(grid.inside,:);
 Current_comp =  1 ;  
-Map = SourceSpaceStuff.SpacialICs_Maps(:,Current_comp) ; 
+Map = SourceSpaceStuff.SpatialICs_Maps(:,Current_comp) ; 
 FigHandle = figure('Position', [1000, 500, 550, 170]);
 plot(Map/max(Map))
 ylim([0 1.05])
@@ -164,7 +164,7 @@ colorbar;
 
 %% Arrow plot for showing the direction of the sources 
 hold on 
-quiver3(positions(:,1),positions(:,2),positions(:,3),[SourceSpaceStuff.SpacialICs(1:3:No_Vox*3,Current_comp)] , [SourceSpaceStuff.SpacialICs(2:3:No_Vox*3,Current_comp)] , [SourceSpaceStuff.SpacialICs(3:3:No_Vox*3,Current_comp)],2.0)
+quiver3(positions(:,1),positions(:,2),positions(:,3),[SourceSpaceStuff.SpatialICs(1:3:No_Vox*3,Current_comp)] , [SourceSpaceStuff.SpatialICs(2:3:No_Vox*3,Current_comp)] , [SourceSpaceStuff.SpatialICs(3:3:No_Vox*3,Current_comp)],2.0)
 
 %% Map on the MRI image.  This is a more convensional way to observe the source maps
 % Current_comp = 1 ; 
@@ -174,7 +174,7 @@ source = grid;
 for Vox_Index = 1 : size(grid.inside,1)
     if  grid.inside(Vox_Index) == 1
         Inside_count = Inside_count + 1;
-        source.avg.Map(Vox_Index) = SourceSpaceStuff.SpacialICs_Maps(Inside_count,Current_comp);
+        source.avg.Map(Vox_Index) = SourceSpaceStuff.SpatialICs_Maps(Inside_count,Current_comp);
     else
         source.avg.Map(Vox_Index) = 0;
     end

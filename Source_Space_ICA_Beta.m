@@ -130,8 +130,8 @@ ft_progress('close')
 
 rank_source = rank(Source_space.continuous{1})  
 
-[U Sig V] = svd(Source_space.continuous{1}) ; 
-
+%[U Sig V] = svd(Source_space.continuous{1}) ; 
+[V U Eigens] = pca(Source_space.continuous{1}) ; 
 % It is recommended to reduce the rank when the data is short or when the
 % band passed data is used as MATLAB sometimes over estimates the number
 % the rank of the data matrix
@@ -141,8 +141,9 @@ end
 
 SpatialPCs  = U(:,1:rank_source) ;      % Spatial subspace
 TemporalSubSpace  = V(:,1:rank_source) ;      % Temporal subspace  
-Sig_D= Sig(1:rank_source,1:rank_source) ; 
-TemporalPCs = Sig_D*TemporalSubSpace' ;   % Principal components (time-courses)
+%Sig_D= Sig(1:rank_source,1:rank_source) ; 
+%TemporalPCs = Sig_D*TemporalSubSpace' ;   % Principal components (time-courses)
+TemporalPCs = TemporalSubSpace' ;   % Principal components (time-courses)
 
 
 data_TemporalSubSpace = Source_space;
@@ -186,6 +187,3 @@ SourceSpace.SpatialPCs_Maps = SpatialPCs_Maps ;
 SourceSpace.SpatialICs_Maps = SpatialICs_Maps ;
 SourceSpace.MixingMatrix = Mixing ;
 SourceSpace.filters = filters ;
-
-
-

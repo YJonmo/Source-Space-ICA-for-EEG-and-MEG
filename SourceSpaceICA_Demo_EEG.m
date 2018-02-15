@@ -3,8 +3,9 @@
 % The reference article is Jonmohamadi et al. (2014, NeuroImage)
 
 %% Using the prebuild BEM on T1 provided by the fieldtrip
-% FieldTripPath = uigetdir;
-% addpath(genpath(FieldTripPath))   % When GUI popped up, highlight the fieldtrip folder and press open
+FieldTripPath = uigetdir;
+addpath(genpath(FieldTripPath))   % When GUI popped up, highlight the fieldtrip folder and press open
+rmpath(strcat(FieldTripPath,'/external/dmlt/external/murphy/KPMstats'))
 load(['/standard_bem.mat']); %template boundary element model
 load(['/standard_mri.mat']); %template mri
 
@@ -125,6 +126,7 @@ cfg.grid = grid;
 cfg.NumComp = 20;                      % This reduces the number of principal components (here to 20). 
                                             % You may not need this, but it is recommend for small suration EEG
 SensorData = SuperImposed
+
 [SourceSpaceStuff] = Source_Space_ICA_Beta(cfg, SensorData);
               
 No_Vox = size(SourceSpaceStuff.SpatialICs_Maps,1) ;
@@ -142,7 +144,7 @@ ft_databrowser(cfg,SourceSpaceStuff.TemporalICs);
 
 %% Function for 3D plotting of the components. Here you need to provide which component you are interested to look at by providing number for 'Current_comp' 
 positions = grid.pos(grid.inside,:);
-Current_comp =  1 ;  
+Current_comp =  18 ;  
 Map = SourceSpaceStuff.SpatialICs_Maps(:,Current_comp) ; 
 FigHandle = figure('Position', [1000, 500, 550, 170]);
 plot(Map/max(Map))

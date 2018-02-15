@@ -14,8 +14,8 @@ function [SourceSpace] = Source_Space_ICA_Beta(cfg, dataToRun)
 % [SourceSpaceStuff] = Source_Space_ICA(cfg, SensorData);
 
 
-% This function performs beamforming on the input data and then performs SVD to separate the spacial and temporal subspaces, then
-% performs ICA on the temporal subspace and finally estimates the spacial
+% This function performs beamforming on the input data and then performs SVD to separate the Spatial and temporal subspaces, then
+% performs ICA on the temporal subspace and finally estimates the Spatial
 % maps of the temporal ICs. 
 % The necessary parts of the cfg are the 
 % cfg.vol which contains volume conduction and cfg.elec for EEG or cfg.grad for MEG 
@@ -33,10 +33,10 @@ function [SourceSpace] = Source_Space_ICA_Beta(cfg, dataToRun)
 % beamfomer
 % SourceSpace.TemporalPCs:      the temporal principal components ;
 % SourceSpace.TemporalICs:      the temporal independent components ;
-% SourceSpace.SpacialPCs:       the spacial principal components  (x,y,z format);
-% SourceSpace.SpacialICs:       the spacial independent components (x, y, z format) ;
-% SourceSpace.SpacialPCs_Maps:  the principal spacial maps for the purpose plotting;
-% SourceSpace.SpacialICs_Maps:  the independent spacial maps for the purpose of plotting;
+% SourceSpace.SpatialPCs:       the Spatial principal components  (x,y,z format);
+% SourceSpace.SpatialICs:       the Spatial independent components (x, y, z format) ;
+% SourceSpace.SpatialPCs_Maps:  the principal Spatial maps for the purpose plotting;
+% SourceSpace.SpatialICs_Maps:  the independent Spatial maps for the purpose of plotting;
 % SourceSpace.MixingMatrix:     the mixing matrix found by the ICA on the temporal data ;
 % SourceSpace.filters:          the beamformer coefficients ;
 
@@ -139,7 +139,7 @@ if  isfield(cfg, 'NumComp')
     rank_source = cfg.NumComp ;
 end
 
-SpacialPCs  = U(:,1:rank_source) ;      % Spatial subspace
+SpatialPCs  = U(:,1:rank_source) ;      % Spatial subspace
 TemporalSubSpace  = V(:,1:rank_source) ;      % Temporal subspace  
 Sig_D= Sig(1:rank_source,1:rank_source) ; 
 TemporalPCs = Sig_D*TemporalSubSpace' ;   % Principal components (time-courses)
@@ -161,29 +161,29 @@ cfg2 = [];
 
 %G = U_D*comp.unmixing;
 Mixing = pinv(TemporalICs.unmixing);                                   
-SpacialICs = SpacialPCs*Mixing ;                                                % Calculating the spatial maps of the ICs
+SpatialICs = SpatialPCs*Mixing ;                                                % Calculating the spatial maps of the ICs
 
 for I = 1:rank_source
     TemporalICs.label{I} = strcat('IC',num2str(I));
 end
 
-%% Producing the 3D maps from the Spacial ICs and PCs
-% No_Vox = size(SpacialICs,1)/3
-SpacialICs_Maps = zeros(No_Vox, rank_source);
-SpacialPCs_Maps = zeros(No_Vox, rank_source);
+%% Producing the 3D maps from the Spatial ICs and PCs
+% No_Vox = size(SpatialICs,1)/3
+SpatialICs_Maps = zeros(No_Vox, rank_source);
+SpatialPCs_Maps = zeros(No_Vox, rank_source);
 for Curren_comp = 1:rank_source
-    SpacialICs_Maps(:,Curren_comp) = sqrt(SpacialICs(1:3:No_Vox*3,Curren_comp).^2 + SpacialICs(2:3:No_Vox*3,Curren_comp).^2 + SpacialICs(3:3:No_Vox*3,Curren_comp).^2) ;
-    SpacialPCs_Maps(:,Curren_comp) = sqrt(SpacialPCs(1:3:No_Vox*3,Curren_comp).^2 + SpacialPCs(2:3:No_Vox*3,Curren_comp).^2 + SpacialPCs(3:3:No_Vox*3,Curren_comp).^2) ;
+    SpatialICs_Maps(:,Curren_comp) = sqrt(SpatialICs(1:3:No_Vox*3,Curren_comp).^2 + SpatialICs(2:3:No_Vox*3,Curren_comp).^2 + SpatialICs(3:3:No_Vox*3,Curren_comp).^2) ;
+    SpatialPCs_Maps(:,Curren_comp) = sqrt(SpatialPCs(1:3:No_Vox*3,Curren_comp).^2 + SpatialPCs(2:3:No_Vox*3,Curren_comp).^2 + SpatialPCs(3:3:No_Vox*3,Curren_comp).^2) ;
 end
 
 %% Returning the processed data
 SourceSpace.data = Source_space;
 SourceSpace.TemporalPCs = data_TemporalSubSpace ;
 SourceSpace.TemporalICs = TemporalICs ;
-SourceSpace.SpacialPCs = SpacialPCs ;
-SourceSpace.SpacialICs = SpacialICs ;
-SourceSpace.SpacialPCs_Maps = SpacialPCs_Maps ;
-SourceSpace.SpacialICs_Maps = SpacialICs_Maps ;
+SourceSpace.SpatialPCs = SpatialPCs ;
+SourceSpace.SpatialICs = SpatialICs ;
+SourceSpace.SpatialPCs_Maps = SpatialPCs_Maps ;
+SourceSpace.SpatialICs_Maps = SpatialICs_Maps ;
 SourceSpace.MixingMatrix = Mixing ;
 SourceSpace.filters = filters ;
 

@@ -36,7 +36,7 @@ cfg.ReduceRankBy = 57 ;                      % This reduces the number of princi
 SensorData = data
 [SourceSpaceStuff] = Source_Space_ICA_Beta(cfg, SensorData);
               
-No_Vox = size(SourceSpaceStuff.SpacialICs_Maps,1) ;
+No_Vox = size(SourceSpaceStuff.SpatialICs_Maps,1) ;
 
 %% Plot the temporal ICs 
 cfg = [];

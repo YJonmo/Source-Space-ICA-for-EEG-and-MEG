@@ -1,104 +1,189 @@
-% This code demonstrates the application of source-space ICA for EEG source
-% reconstruction
-% The reference article is Jonmohamadi et al. (2014, NeuroImage)
+function [SourceSpace] = Source_Space_ICA_Beta(cfg, dataToRun)
 
-%% Using the prebuild BEM on T1 provided by the fieldtrip
-% FieldTripPath = uigetdir;
-% addpath(genpath(FieldTripPath))   % When GUI popped up, highlight the fieldtrip folder and press open
-load(['/standard_bem.mat']); %template boundary element model
-load(['/standard_mri.mat']); %template mri
 
-load('Subject1_faces_scramb')
-%load('Subject2_faces_scramb')
+% Sample using syntax:
+% cfg = [] ; 
+% cfg.NoTrials = 100 ;
+% cfg.vol = vol;
+% cfg.elec = elec;      % for EEG
+% cfg.grad = grad;      % for MEG    
+% cfg.grid = grid;      
+% cfg.ReSampleFs = 100;
+% cfg.NumComp = 20;
+% SensorData = data_simulation_Trialed
+% [SourceSpaceStuff] = Source_Space_ICA(cfg, SensorData);
 
-%Generate sourcemodel and leadfields
-cfg = [];
-cfg.headmodel = vol;        % Came from standard_bem.mat
-cfg.elec = data.elec;
-cfg.grid.resolution = 8 ;   % use a 3-D grid with a 8mm resolution
-cfg.grid.unit       = 'mm';
-cfg.channel = elec.label; %Only generate leadfields for good channels else will bug out later
-grid = ft_prepare_leadfield(cfg);
 
-%% Calling the source-space ICA
-% When calling the source-space ICA, you need to know that it requires substantial amount of RAM from your computer.
-% To reduce the required RAM, you can reduce the resolution for the
-% scanning grid, or reduce the length of the data duration by cfg.NoTrials
-% and also reducing the sample rate of the date using the cfg.ReSampleFs
-cfg = [] ; 
-cfg.NoTrials = 1 ; 
-cfg.vol = vol;
-cfg.elec = data.elec;
-% cfg.ReSampleFs = 100;  
-cfg.grid = grid;
-cfg.ReduceRankBy = 57 ;                      % This reduces the number of principal components (here by 20). 
-                                            % You may not need this, but it is recommend for small suration EEG
-SensorData = data
-[SourceSpaceStuff] = Source_Space_ICA_Beta(cfg, SensorData);
-              
-No_Vox = size(SourceSpaceStuff.SpatialICs_Maps,1) ;
+% This function performs beamforming on the input data and then performs SVD to separate the Spatial and temporal subspaces, then
+% performs ICA on the temporal subspace and finally estimates the Spatial
+% maps of the temporal ICs. 
+% The necessary parts of the cfg are the 
+% cfg.vol which contains volume conduction and cfg.elec for EEG or cfg.grad for MEG 
+% for the location of the sensor and their labels. 
 
-%% Plot the temporal ICs 
-cfg = [];
-cfg.viewmode = 'vertical';
-cfg.colorgroups = ones([1 length(SourceSpaceStuff.TemporalICs.label)]);
-cfg.channelcolormap = [0 0 0];  %Above two lines plot in blue (events will be black)
-cfg.ploteventlabels = 'colorvalue';
-cfg.ylim = [-0.2 .2]; %sets yscale
-cfg.blocksize = 10 ;
-cfg.continuous              = 'yes';
-ft_databrowser(cfg,SourceSpaceStuff.TemporalICs);
+% The optional inputs are  
+% cfg.ReSampleFs (almost necessary to reduce the size of the required
+% memory) when the sampling rate is high (e.g., 500)
+% cfg.NoTrials which indicates how many trials of the given data shall be processed. If not give, all the trials will be processed
+% cfg.NumComp which shows how many of the components shall be considered
+% by SVD. If not given nothing will be removed. 
 
-%% Function for 3D plotting of the components. Here you need to provide which component you are interested to look at by providing number for 'Current_comp' 
-positions = grid.pos(grid.inside,:);
-Current_comp =  6 ;  
-Map = SourceSpaceStuff.SpatialICs_Maps(:,Current_comp) ; 
-FigHandle = figure('Position', [1000, 500, 550, 170]);
-plot(Map/max(Map))
-ylim([0 1.05])
-xlim([0 No_Vox+10])
-set(gcf,'Color',[1 1 1])
-set(gca,'Color',[1 1 1])
-xlabel('Voxel')
-ylabel('Normalized intensitycl')
+% The outputs of this function are:
+% SourceSpace.data which is the source-space projected data via the vector
+% beamfomer
+% SourceSpace.TemporalPCs:      the temporal principal components ;
+% SourceSpace.TemporalICs:      the temporal independent components ;
+% SourceSpace.SpatialPCs:       the Spatial principal components  (x,y,z format);
+% SourceSpace.SpatialICs:       the Spatial independent components (x, y, z format) ;
+% SourceSpace.SpatialPCs_Maps:  the principal Spatial maps for the purpose plotting;
+% SourceSpace.SpatialICs_Maps:  the independent Spatial maps for the purpose of plotting;
+% SourceSpace.MixingMatrix:     the mixing matrix found by the ICA on the temporal data ;
+% SourceSpace.filters:          the beamformer coefficients ;
 
-figure
-scatter3(positions(:,1),positions(:,2),positions(:,3),(Map/max(Map)*50),Map,'filled')
-xlabel('X')
-ylabel('Y')
-zlabel('Z')
-set(gca,'Color',[0.8 0.8 0.8])
-set(gcf,'Color',[0.8 0.8 0.8])
-colorbar;
 
-%% Arrow plot for showing the direction of the sources 
-hold on 
-quiver3(positions(:,1),positions(:,2),positions(:,3),[SourceSpaceStuff.SpatialICs(1:3:No_Vox*3,Current_comp)] , [SourceSpaceStuff.SpatialICs(2:3:No_Vox*3,Current_comp)] , [SourceSpaceStuff.SpatialICs(3:3:No_Vox*3,Current_comp)],2.0)
 
-%% Map on the MRI image.  This is a more convensional way to observe the source maps
-% Current_comp = 1 ; 
 
-Inside_count = 0;
-source = grid;
-for Vox_Index = 1 : size(grid.inside,1)
-    if  grid.inside(Vox_Index) == 1
-        Inside_count = Inside_count + 1;
-        source.avg.Map(Vox_Index) = SourceSpaceStuff.SpatialICs_Maps(Inside_count,Current_comp);
-    else
-        source.avg.Map(Vox_Index) = 0;
-    end
+%%
+if  isfield(cfg, 'NoTrials') 
+    trials = 1:cfg.NoTrials;
+else
+    trials = 1:length(dataToRun.trial)
+end
+
+%% Data cannot be too long for the source-space ICA (or it can contain all the trials but down-sampled)
+% This part may reduce the data length as provided by the user.
+data_shortened = dataToRun;
+data_shortened = rmfield(data_shortened, 'trial')
+data_shortened = rmfield(data_shortened, 'time')
+for Trial_Index = trials
+    data_shortened.trial{Trial_Index} = dataToRun.trial{Trial_Index};
+    data_shortened.time{Trial_Index} = dataToRun.time{Trial_Index}; 
+end
+
+%% Down sample the data if user provided
+if  isfield(cfg, 'ReSampleFs') 
+    cfg2 = [];
+    cfg2.resamplefs = cfg.ReSampleFs;
+    data_shortened = ft_resampledata(cfg2, data_shortened)
+end
+
+%% Vector LCMV beamformer 
+cfg2 = [];
+cfg2.covariance = 'yes';
+cfg2.covariancewindow = 'all';
+timelock = ft_timelockanalysis(cfg2, data_shortened);
+
+% EEG or MEG 
+cfg2= [];
+cfg2.headmodel = cfg.vol;
+if  (isfield(cfg, 'elec'))      % EEG
+    cfg2.elec = cfg.elec;
+elseif(isfield(cfg, 'grad'))    % MEG
+    cfg2.grad = cfg.grad;
+else
+    error ('please provide sensor file (elec for EEG or grad for MEG')
+end
+cfg2.grid = cfg.grid;
+cfg2.method = 'lcmv';
+cfg2.lcmv.projectnoise='yes'; %needed for neural activity index
+%cfg2.lcmv.fixedori = 'yes';  %Project onto largest variance orientation
+cfg2.lcmv.keepfilter = 'yes'; %Keep the beamformer weights
+cfg2.lcmv.lambda = '5%'; %Regularise a little
+source = ft_sourceanalysis(cfg2, timelock);
+
+filters = cell2mat(source.avg.filter(source.inside == 1)); 
+
+%% Beamformer's weight normalization
+No_Vox = size(filters,1)/3;
+for Vox_Index = 1:No_Vox*3
+    filters(Vox_Index,:) = filters(Vox_Index,:)/norm(filters(Vox_Index,:));
 end
     
-cfg              = [];
-cfg.parameter    = 'Map';
-cfg.interpmethod = 'nearest';
-source_diff_int  = ft_sourceinterpolate(cfg, source, mri);
+%% Converting to the continuous data
+%Source_space = data_shortened;
 
-%And plot the results
-source_diff_int.coordsys = 'mni';
-cfg = [];
-cfg.funparameter    = 'Map';
-cfg.funcolorlim   = 'maxabs';
-%cfg.method = 'slice';
-cfg.method = 'ortho';
-ft_sourceplot(cfg,source_diff_int);
+data_continuous = data_shortened;
+data_continuous = rmfield(data_continuous, 'trial');
+data_continuous = rmfield(data_continuous, 'time');
+template_time = (0: (data_shortened.time{1}(2) - data_shortened.time{1}(1)) : 1/data_shortened.fsample*size(data_shortened.time{1},2)) ; 
+data_continuous.trial{1}  = zeros(size(data_shortened.trial{1},1),  size(data_shortened.trial{1},2) * length(data_shortened.trial));
+data_continuous.time{1}  = zeros(1,                             size(data_shortened.time{1},2)  * length(data_shortened.time));
+for Trial_Index = 1:length(data_shortened.trial)
+    data_continuous.trial{1}(:,(Trial_Index-1)*size(data_shortened.trial{Trial_Index},2)+ 1: Trial_Index*size(data_shortened.trial{Trial_Index},2)) = data_shortened.trial{Trial_Index}(:,:); 
+    data_continuous.time{1}(1,(Trial_Index-1)*size(data_shortened.time{Trial_Index},2)+ 1: Trial_Index*  size(data_shortened.time{Trial_Index},2)) = template_time(1:end-1) + (Trial_Index-1)*template_time(end) ;
+end
+
+%Source_space = trial2continuous(data_shortened);
+Source_space = data_continuous ; 
+Source_space.continuous{1} = zeros(size(filters,1), size(data_shortened.trial{1},2)*length(data_shortened.trial));
+Source_space.trial = data_shortened.trial;
+
+for Trial_Index = 1:length(data_shortened.trial)
+    ft_progress(Trial_Index/length(data_shortened.trial), 'Processing trial %d from %d', Trial_Index, length(data_shortened.trial));
+    Source_space.continuous{1}(:, (Trial_Index-1)*size(data_shortened.time{Trial_Index},2) + 1: Trial_Index*size(data_shortened.time{Trial_Index},2)) = (filters * data_shortened.trial{Trial_Index}); 
+    Source_space.trial{Trial_Index} = filters * data_shortened.trial{Trial_Index};
+end
+ft_progress('close')
+
+                    
+%% Source-space ICA
+
+rank_source = rank(Source_space.continuous{1})  
+
+%[U Sig V] = svd(Source_space.continuous{1}) ; 
+[V U Eigens] = pca(Source_space.continuous{1}) ; 
+% It is recommended to reduce the rank when the data is short or when the
+% band passed data is used as MATLAB sometimes over estimates the number
+% the rank of the data matrix
+if  isfield(cfg, 'NumComp')
+    rank_source = cfg.NumComp ;
+end
+
+SpatialPCs  = U(:,1:rank_source) ;      % Spatial subspace
+TemporalSubSpace  = V(:,1:rank_source) ;      % Temporal subspace  
+%Sig_D= Sig(1:rank_source,1:rank_source) ; 
+%TemporalPCs = Sig_D*TemporalSubSpace' ;   % Principal components (time-courses)
+TemporalPCs = TemporalSubSpace' ;   % Principal components (time-courses)
+
+
+data_TemporalSubSpace = Source_space;
+data_TemporalSubSpace = rmfield(data_TemporalSubSpace, 'trial')
+data_TemporalSubSpace.trial{1} = TemporalPCs;
+data_TemporalSubSpace = rmfield(data_TemporalSubSpace, 'label')
+%data_TemporalSubSpace.label = Source_space.label(1:rank_source);    % this is just to fool the fieldtrip to continue working
+
+PCs = 1:rank_source;
+for I = 1:rank_source
+    data_TemporalSubSpace.label{I} = strcat('PC',num2str(I));
+end
+
+cfg2 = [];
+[TemporalICs] = ft_componentanalysis(cfg2, data_TemporalSubSpace) ;          % Running ICA for the temporal subsapce
+
+%G = U_D*comp.unmixing;
+Mixing = pinv(TemporalICs.unmixing);                                   
+SpatialICs = SpatialPCs*Mixing ;                                                % Calculating the spatial maps of the ICs
+
+for I = 1:rank_source
+    TemporalICs.label{I} = strcat('IC',num2str(I));
+end
+
+%% Producing the 3D maps from the Spatial ICs and PCs
+% No_Vox = size(SpatialICs,1)/3
+SpatialICs_Maps = zeros(No_Vox, rank_source);
+SpatialPCs_Maps = zeros(No_Vox, rank_source);
+for Curren_comp = 1:rank_source
+    SpatialICs_Maps(:,Curren_comp) = sqrt(SpatialICs(1:3:No_Vox*3,Curren_comp).^2 + SpatialICs(2:3:No_Vox*3,Curren_comp).^2 + SpatialICs(3:3:No_Vox*3,Curren_comp).^2) ;
+    SpatialPCs_Maps(:,Curren_comp) = sqrt(SpatialPCs(1:3:No_Vox*3,Curren_comp).^2 + SpatialPCs(2:3:No_Vox*3,Curren_comp).^2 + SpatialPCs(3:3:No_Vox*3,Curren_comp).^2) ;
+end
+
+%% Returning the processed data
+SourceSpace.data = Source_space;
+SourceSpace.TemporalPCs = data_TemporalSubSpace ;
+SourceSpace.TemporalICs = TemporalICs ;
+SourceSpace.SpatialPCs = SpatialPCs ;
+SourceSpace.SpatialICs = SpatialICs ;
+SourceSpace.SpatialPCs_Maps = SpatialPCs_Maps ;
+SourceSpace.SpatialICs_Maps = SpatialICs_Maps ;
+SourceSpace.MixingMatrix = Mixing ;
+SourceSpace.filters = filters ;

@@ -36,4 +36,4 @@ You need to make sure your EEG or MEG data has the same structure as simulated d
 When calling the source-space ICA, you need to know that it requires substantial amount of RAM from your computer.
 To reduce the required RAM, you can reduce the resolution of the scanning grid, or reduce the length of the data or reduce the sampling rate of the date, which can be done using cfg.grid.resolution before calling ft_prepare_leadfield function, cfg.NoTrials and cfg.ReSampleFs before calling Source_Space_ICA_Beta.
 
-For any other question please contact Yaqub Jonmohamadi at y.jonmo@auckland.ac.nz
+For any other question please contact Yaqub Jonmohamadi at y.jonmo@gmail.com
